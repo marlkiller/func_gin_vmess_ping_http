@@ -11,16 +11,16 @@ import (
     "strconv"
     "syscall"
     "time"
-    
+
     "github.com/aws/aws-sdk-go-v2/aws"
     "github.com/aws/aws-sdk-go-v2/config"
     "github.com/aws/aws-sdk-go-v2/credentials"
     "github.com/aws/aws-sdk-go-v2/service/lightsail"
-    
+
     "log"
     "net/http"
     "strings"
-    
+
     "github.com/aliyun/fc-runtime-go-sdk/fc"
 )
 
@@ -38,7 +38,7 @@ func main() {
 func HandleHttpRequest(ctx context.Context, w http.ResponseWriter, req *http.Request) error {
     w.WriteHeader(http.StatusOK)
     w.Header().Add("Content-Type", "text/plain")
-    
+
     w.Write([]byte(getRespWithUrl(req) + "\r\n"))
     return nil
 }
@@ -59,7 +59,7 @@ func getRespWithUrl(req *http.Request) string {
         resp, err := svc.GetInstance(context.TODO(), &lightsail.GetInstanceInput{
             InstanceName: aws.String(instanceName),
         })
-        
+
         if err != nil {
             log.Fatalf("failed to list tables, %v", err)
         }
@@ -84,7 +84,7 @@ func getRespWithUrl(req *http.Request) string {
             "vmess": base64.StdEncoding.EncodeToString(vmess)}
         return MapToJson(result)
     }
-    
+
     if strings.Contains(req.URL.String(), "vmess") {
         vmess := "vmess://" + req.FormValue("vmess")
         osSignals := make(chan os.Signal, 1)
@@ -107,24 +107,24 @@ func Ping(vmess string, count uint, dest string, timeoutsec, inteval, quit uint,
         fmt.Println(err.Error())
         return nil, err
     }
-    
+
     if err := server.Start(); err != nil {
         fmt.Println("Failed to start", err)
         return nil, err
     }
     defer server.Close()
-    
+
     if showNode {
         go func() {
             info, err := mv2ray.GetNodeInfo(server, time.Second*10)
             if err != nil {
                 return
             }
-            
+
             fmt.Printf("Node Outbound: %s/%s\n", info["loc"], info["ip"])
         }()
     }
-    
+
     ps := &PingStat{}
     ps.StartTime = time.Now()
     round := count
@@ -132,7 +132,7 @@ L:
     for round > 0 {
         seq := count - round + 1
         ps.ReqCounter++
-        
+
         chDelay := make(chan int64)
         go func() {
             delay, err := mv2ray.MeasureDelay(server, time.Second*time.Duration(timeoutsec), dest)
@@ -142,7 +142,7 @@ L:
             }
             chDelay <- delay
         }()
-        
+
         select {
         case delay := <-chDelay:
             if delay > 0 {
@@ -152,11 +152,11 @@ L:
         case <-stopCh:
             break L
         }
-        
+
         if quit > 0 && ps.ErrCounter >= quit {
             break
         }
-        
+
         if round--; round > 0 {
             select {
             case <-time.After(time.Second * time.Duration(inteval)):
@@ -166,7 +166,7 @@ L:
             }
         }
     }
-    
+
     ps.CalStats()
     return ps, nil
 }
