@@ -5,23 +5,23 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	mv2ray "main/miniv2ray"
 	"os"
 	"os/signal"
 	"strconv"
 	"syscall"
 	"time"
 
-	mv2ray "main/miniv2ray"
-
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/lightsail"
 
-	"github.com/aliyun/fc-runtime-go-sdk/fc"
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/aliyun/fc-runtime-go-sdk/fc"
 )
 
 const (
