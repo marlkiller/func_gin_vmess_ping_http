@@ -24,4 +24,8 @@ go.fc.voidm.com?vmess=eyJhZGQiOiI1NC4xNjkuMTg4LjIzNSIsImFpZCI6IjAiLCJob3N0IjoiIi
 go.fc.voidm.com?instance
 
 
+##### zip
+
+tar -zcvf go_dev-code.zip ./*
+
 
